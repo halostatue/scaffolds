@@ -1,0 +1,22 @@
+_default:
+    just --list
+
+# Build the action bundle
+@build:
+    gleam build
+    gleam run -m pontil_build
+
+@test:
+    gleam test
+
+@lint:
+    gleam run -m glinter
+
+@format:
+    gleam format
+
+@format-check:
+    gleam format --check src test
+
+@clean:
+    rm -rf build

@@ -1,0 +1,110 @@
+# yaml-language-server: $schema=https://hay-kot.github.io/scaffold/schema.json
+messages:
+  pre: |
+    # Fish Plugin Scaffold
+
+    Generate a new Fish shell plugin with standard tooling and structure.
+
+  post: |
+    # Get Started
+
+    ```sh
+    cd {{ .ProjectSnake }}
+    just test
+    ```
+
+presets:
+  default: {}
+
+  test:
+    description: "Test fish scaffold"
+    githubOwner: "test-owner"
+    authorName: "Test Author"
+    licenceId: "MIT"
+
+questions:
+  - name: "description"
+    group: "project"
+    prompt:
+      message: "Project description"
+      multi: true
+    required: true
+
+  - name: "githubOwner"
+    group: "project"
+    prompt:
+      message: "GitHub owner (user or org)"
+    required: true
+
+  - name: "authorName"
+    group: "project"
+    prompt:
+      message: "Author/Maintainer name (optional, defaults to GitHub owner)"
+
+  - name: "licenceId"
+    group: "licence"
+    prompt:
+      message: "License"
+      default: "MIT"
+      options:
+        - "Apache-2.0"
+        - "MIT"
+        - "Apache-2.0 and MIT"
+
+  - name: "useGithubActions"
+    group: "ci"
+    prompt:
+      confirm: "Enable GitHub Actions?"
+      default: true
+
+  - name: "useDependabot"
+    group: "ci"
+    prompt:
+      confirm: "Enable Dependabot?"
+      default: true
+
+  - name: "useGitHubFunding"
+    group: "project"
+    prompt:
+      confirm: "Enable GitHub Funding?"
+      default: true
+
+computed:
+  author: "{{ or .Scaffold.authorName .Scaffold.githubOwner }}"
+  githubRepoName: "{{ .Scaffold.githubOwner }}/{{ .ProjectSnake }}"
+  githubUrl: "https://github.com/{{ .Scaffold.githubOwner }}/{{ .ProjectSnake }}"
+  hasApache: '{{ or (eq .Scaffold.licenceId "Apache-2.0") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
+  hasMit: '{{ or (eq .Scaffold.licenceId "MIT") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
+  isDual: '{{ eq .Scaffold.licenceId "Apache-2.0 and MIT" }}'
+  year: '{{ now | date "2006" }}'
+
+features:
+  - value: "{{ .Scaffold.useGithubActions }}"
+    globs:
+      - "**/.github/workflows/**"
+      - "**/.github/zizmor.yml"
+
+  - value: "{{ .Scaffold.useDependabot }}"
+    globs:
+      - "**/.github/dependabot.yml"
+
+  - value: "{{ .Computed.hasApache }}"
+    globs:
+      - "**/licences/APACHE-2.0.txt"
+
+  - value: "{{ .Computed.hasMit }}"
+    globs:
+      - "**/licences/MIT.txt"
+
+  - value: "{{ .Scaffold.useGitHubFunding }}"
+    globs:
+      - "**/.github/FUNDING.yml"
+
+delimiters:
+  - glob: "**/.github/workflows/**"
+    left: "#[[["
+    right: "]]]"
+
+  - glob: "**/Justfile"
+    left: "#[[["
+    right: "]]]"

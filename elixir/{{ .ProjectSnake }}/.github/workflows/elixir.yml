@@ -1,0 +1,115 @@
+name: Elixir CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  elixir-ci:
+    name: Elixir ${{ matrix.elixir }} (OTP ${{ matrix.otp }})
+
+    env:
+      LANG: en_US.UTF-8
+      LC_CTYPE: en_US.UTF-8
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          #[[[ if ge 17 (.Scaffold.elixirVersion | toInt) -]]]
+          - elixir: '1.17'
+            otp: '27'
+            os: ubuntu-latest #[[[- end ]]]
+          #[[[ if ge 18 (.Scaffold.elixirVersion | toInt) -]]]
+          - elixir: '1.18'
+            otp: '27'
+            os: ubuntu-latest #[[[- end ]]]
+          #[[[ if ge 19 (.Scaffold.elixirVersion | toInt) -]]]
+          - elixir: '1.19'
+            otp: '28'
+            os: ubuntu-latest #[[[- end ]]]
+          - elixir: '1.20'
+            otp: '29'
+            os: ubuntu-latest
+            quality: true
+
+    runs-on: ${{ matrix.os }}
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            builds.hex.pm:443
+            coveralls.io:443
+            github.com:443
+            release-assets.githubusercontent.com:443
+            repo.hex.pm:443
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - uses: erlef/setup-beam@fc68ffb90438ef2936bbb3251622353b3dcb2f93 # v1.24.0
+        id: install
+        with:
+          otp-version: ${{ matrix.otp }}
+          elixir-version: ${{ matrix.elixir }}
+
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          key: builds@elixir-${{ steps.install.outputs.elixir-version }}-otp-${{ steps.install.outputs.otp-version }}-mix-${{ hashFiles('mix.lock') }}
+          path: |
+            deps
+            _build
+
+      - run: mix 'do' deps.get, deps.compile
+
+      - run: mix deps.audit
+        if: matrix.quality
+
+      - run: mix sobelow
+        if: matrix.quality
+
+      - run: mix format --check-formatted
+        if: matrix.quality
+
+      - run: mix compile --warnings-as-errors
+        if: matrix.quality
+
+      - run: mix coveralls.github
+        if: ${{ matrix.quality }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - run: |
+          mix compile
+          mix test
+        if: ${{ !matrix.quality }}
+
+      - run: mix credo --strict
+        if: matrix.quality
+
+      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          key: plts@elixir-${{ steps.install.outputs.elixir-version }}-otp-${{ steps.install.outputs.otp-version }}-mix-${{ hashFiles('mix.lock') }}
+          path: |
+            priv/plts
+          restore-keys: |
+            plts@elixir-${{ steps.install.outputs.elixir-version }}-otp-${{ steps.install.outputs.otp-version }}-mix-
+
+      - run: mix dialyzer --format github
+        if: matrix.quality

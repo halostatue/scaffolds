@@ -1,0 +1,19 @@
+name: '#[[[ .Computed.githubRepoName ]]]'
+description: |
+  #[[[ .Scaffold.description ]]]
+author: '#[[[ .Computed.author ]]]'
+
+inputs:
+  token:
+    description: |
+      A GitHub token for use with this action.
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: 'node24'
+  main: 'dist/#[[[ .ProjectSnake ]]].cjs'
+
+branding:
+  icon: '#[[[ .Scaffold.actionIcon ]]]'
+  color: '#[[[ .Scaffold.actionColor ]]]'

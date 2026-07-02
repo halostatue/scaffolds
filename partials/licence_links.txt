@@ -1,0 +1,3 @@
+{{- if .Computed.isDual -}}[Apache-2.0][spdx-apache] and [MIT][spdx-mit]
+{{- else if .Computed.hasApache -}}[Apache-2.0][spdx-apache]
+{{- else -}}[MIT][spdx-mit]{{- end -}}

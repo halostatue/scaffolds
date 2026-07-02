@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+cd "{{ .ProjectSnake }}"
+
+fd -H -tf --exec-batch chmod -x
+
+mise trust
+mise run pinact --update
+
+mix deps.get
+
+git init
+git add .

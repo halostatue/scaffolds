@@ -1,0 +1,31 @@
+default:
+    just --list
+
+# Run tests
+test:
+    go test -v ./...
+
+# Run tests with coverage
+test-coverage:
+    go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+# Run linters
+lint:
+    go vet ./...
+    staticcheck ./...
+
+# Format code
+fmt:
+    gofmt -w .
+
+# Check formatting
+fmt-check:
+    test -z "$$(gofmt -l .)"
+
+# Build binary
+build:
+    go build ./...
+
+# Run vulnerability check
+vuln:
+    govulncheck ./...

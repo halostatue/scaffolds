@@ -1,0 +1,1 @@
+# Completions for {{ .ProjectSnake }}

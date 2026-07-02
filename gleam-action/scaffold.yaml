@@ -1,0 +1,131 @@
+# yaml-language-server: $schema=https://hay-kot.github.io/scaffold/schema.json
+messages:
+  pre: |
+    # Gleam GitHub Action Scaffold
+
+    Generate a new Gleam-based GitHub Action with separated core/action entry points.
+
+  post: |
+    # Get Started
+
+    ```sh
+    cd {{ .ProjectSnake }}
+    gleam test
+    just build
+    ```
+
+presets:
+  default:
+    gleamMinorVersion: "17"
+
+  test:
+    description: "Test gleam-action scaffold"
+    githubOwner: "test-owner"
+    authorName: "Test Author"
+    gleamMinorVersion: "17"
+    actionIcon: "check-circle"
+    actionColor: "blue"
+    licenceId: "MIT"
+
+questions:
+  - name: "description"
+    group: "project"
+    prompt:
+      message: "Project description"
+      multi: true
+    required: true
+
+  - name: "githubOwner"
+    group: "project"
+    prompt:
+      message: "GitHub owner (user or org)"
+    required: true
+
+  - name: "authorName"
+    group: "project"
+    prompt:
+      message: "Author/Maintainer name (optional, defaults to GitHub owner)"
+
+  - name: "gleamMinorVersion"
+    group: "project"
+    prompt:
+      message: "Gleam minor version (integer, e.g. 15 for 1.15)"
+      default: "17"
+
+  - name: "actionIcon"
+    group: "action"
+    prompt:
+      message: "Action branding icon (feather icon name)"
+      default: "check-circle"
+
+  - name: "actionColor"
+    group: "action"
+    prompt:
+      message: "Action branding color"
+      default: "blue"
+      options:
+        - "white"
+        - "yellow"
+        - "blue"
+        - "green"
+        - "orange"
+        - "red"
+        - "purple"
+        - "gray-dark"
+
+  - name: "licenceId"
+    group: "licence"
+    prompt:
+      message: "License"
+      default: "Apache-2.0"
+      options:
+        - "Apache-2.0"
+        - "MIT"
+        - "Apache-2.0 and MIT"
+
+  - name: "useGitHubFunding"
+    group: "project"
+    prompt:
+      confirm: "Enable Funding?"
+      default: true
+
+computed:
+  author: '{{ or .Scaffold.authorName .Scaffold.githubOwner }}'
+  githubRepoName: '{{ .Scaffold.githubOwner }}/{{ .ProjectSnake }}'
+  githubUrl: 'https://github.com/{{.Scaffold.githubOwner }}/{{ .ProjectSnake }}'
+  gleamMinVersion: '1.{{ .Scaffold.gleamMinorVersion | toInt | add -1 }}.0'
+  gleamMiseVersion: '1.{{ .Scaffold.gleamMinorVersion }}'
+  hasApache: '{{ or (eq .Scaffold.licenceId "Apache-2.0") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
+  hasMit: '{{ or (eq .Scaffold.licenceId "MIT") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
+  isDual: '{{ eq .Scaffold.licenceId "Apache-2.0 and MIT" }}'
+  licenceShield: >
+   {{- if eq .Scaffold.licenceId "Apache-2.0 and MIT" -}}
+   Apache--2.0%20AND%20MIT
+   {{- else if eq .Scaffold.licenceId "Apache-2.0" -}}
+   Apache--2.0
+   {{- else -}}
+   MIT
+   {{- end -}}
+  year: '{{ now | date "2006" }}'
+
+features:
+  - value: "{{ .Computed.hasApache }}"
+    globs:
+      - "**/licences/APACHE-2.0.txt"
+
+  - value: "{{ .Computed.hasMit }}"
+    globs:
+      - "**/licences/MIT.txt"
+
+  - value: "{{ .Scaffold.useGitHubFunding }}"
+    globs:
+      - "**/.github/FUNDING.yml"
+
+delimiters:
+  - glob: "**/.github/workflows/**"
+    left: "#[[["
+    right: "]]]"
+
+  - glob: "**/action.yml"
+    left: "#[[["
+    right: "]]]"

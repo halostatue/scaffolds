@@ -1,0 +1,14 @@
+[package]
+name = "{{ .ProjectSnake }}"
+version = "0.1.0"
+edition = "{{ .Scaffold.edition }}"
+rust-version = "{{ .Scaffold.msrv }}"
+authors = ["{{ .Computed.author }}"]
+description = "{{ .Scaffold.description }}"
+repository = "{{.Computed.githubUrl}}"
+license = "{{ .Scaffold.licenceId}}"
+
+[dependencies]
+
+[build-dependencies]
+vergen-git2 = { version = "1", features = ["build", "cargo"] }

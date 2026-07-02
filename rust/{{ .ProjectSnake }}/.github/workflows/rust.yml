@@ -1,0 +1,71 @@
+name: Rust CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust-ci:
+    name: Rust ${{ matrix.rust }} on ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rust: stable
+            os: ubuntu-latest
+            check_fmt: true
+            clippy: true
+          - rust: beta
+            os: ubuntu-latest
+          - rust: nightly
+            os: ubuntu-latest
+          - rust: '#[[[ .Scaffold.msrv ]]]'
+            os: ubuntu-latest
+
+    runs-on: ${{ matrix.os }}
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            crates.io:443
+            github.com:443
+            index.crates.io:443
+            static.crates.io:443
+            static.rust-lang.org:443
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+          components: ${{ matrix.check_fmt && 'rustfmt' || '' }}${{ matrix.clippy && ',clippy' || '' }}
+
+      - uses: Swatinem/rust-cache@82a92a6e8fbeee089604da2575dc567ae9ddeaab # v2.7.5
+
+      - run: cargo fmt --check
+        if: matrix.check_fmt
+
+      - run: cargo clippy --all-targets --all-features -- -D warnings
+        if: matrix.clippy
+
+      - run: cargo build --all-targets --all-features
+
+      - run: cargo test --all-features

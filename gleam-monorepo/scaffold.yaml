@@ -1,0 +1,118 @@
+# yaml-language-server: $schema=https://hay-kot.github.io/scaffold/schema.json
+messages:
+  pre: |
+    # Gleam Monorepo Scaffold
+
+    Generate a new Gleam monorepo with a packages/ directory structure.
+
+  post: |
+    # Get Started
+
+    ```sh
+    cd {{ .ProjectSnake }}
+    just test
+    ```
+
+presets:
+  default:
+    gleamMinorVersion: "17"
+
+  test:
+    description: "Test gleam-monorepo scaffold"
+    githubOwner: "test-owner"
+    authorName: "Test Author"
+    gleamMinorVersion: "17"
+    licenceId: "Apache-2.0 and MIT"
+
+questions:
+  - name: "description"
+    group: "project"
+    prompt:
+      message: "Project description"
+      multi: true
+    required: true
+
+  - name: "githubOwner"
+    group: "project"
+    prompt:
+      message: "GitHub owner (user or org)"
+    required: true
+
+  - name: "authorName"
+    group: "project"
+    prompt:
+      message: "Author/Maintainer name (optional, defaults to GitHub owner)"
+
+  - name: "gleamMinorVersion"
+    group: "project"
+    prompt:
+      message: "Gleam minor version (integer, e.g. 15 for 1.15)"
+      default: "17"
+
+  - name: "licenceId"
+    group: "licence"
+    prompt:
+      message: "License"
+      default: "Apache-2.0"
+      options:
+        - "Apache-2.0"
+        - "MIT"
+        - "Apache-2.0 and MIT"
+
+  - name: "useGithubActions"
+    group: "ci"
+    prompt:
+      confirm: "Enable GitHub Actions?"
+      default: true
+
+  - name: "useDependabot"
+    group: "ci"
+    prompt:
+      confirm: "Enable Dependabot?"
+      default: true
+
+  - name: "useGitHubFunding"
+    group: "project"
+    prompt:
+      confirm: "Enable GitHub Funding?"
+      default: true
+
+computed:
+  author: '{{ or .Scaffold.authorName .Scaffold.githubOwner }}'
+  githubRepoName: '{{ .Scaffold.githubOwner }}/{{ .ProjectSnake }}'
+  githubUrl: 'https://github.com/{{.Scaffold.githubOwner }}/{{ .ProjectSnake }}'
+  gleamCurrMinor: '1.{{ .Scaffold.gleamMinorVersion }}'
+  gleamMinVersion: '1.{{ .Scaffold.gleamMinorVersion | toInt | add -1 }}.0'
+  gleamMiseVersion: '1.{{ .Scaffold.gleamMinorVersion }}'
+  gleamPrevMinor: '1.{{ .Scaffold.gleamMinorVersion | toInt | add -1 }}'
+  hasApache: '{{ or (eq .Scaffold.licenceId "Apache-2.0") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
+  hasMit: '{{ or (eq .Scaffold.licenceId "MIT") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
+  isDual: '{{ eq .Scaffold.licenceId "Apache-2.0 and MIT" }}'
+  year: '{{ now | date "2006" }}'
+
+features:
+  - value: "{{ .Scaffold.useGithubActions }}"
+    globs:
+      - "**/.github/workflows/**"
+      - "**/.github/zizmor.yml"
+
+  - value: "{{ .Scaffold.useDependabot }}"
+    globs:
+      - "**/.github/dependabot.yml"
+
+  - value: "{{ .Computed.hasApache }}"
+    globs:
+      - "**/licences/APACHE-2.0.txt"
+
+  - value: "{{ .Computed.hasMit }}"
+    globs:
+      - "**/licences/MIT.txt"
+
+  - value: "{{ .Scaffold.useGitHubFunding }}"
+    globs:
+      - "**/.github/FUNDING.yml"
+
+delimiters:
+  - glob: "**/.github/workflows/**"
+    left: "#[[["
+    right: "]]]"

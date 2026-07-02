@@ -1,0 +1,19 @@
+CHANGELOG.md
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md
+LICENCE.md
+Manifest.txt
+README.md
+Rakefile
+SECURITY.md
+lib/{{ .ProjectSnake }}.rb
+lib/{{ .ProjectSnake }}/version.rb
+{{- if .Computed.hasApache }}
+licences/APACHE-2.0.txt
+{{- end }}
+{{- if .Computed.hasMit }}
+licences/MIT.txt
+{{- end }}
+licences/dco.txt
+test/minitest_helper.rb
+test/test_{{ .ProjectSnake }}.rb

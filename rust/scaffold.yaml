@@ -1,0 +1,123 @@
+# yaml-language-server: $schema=https://hay-kot.github.io/scaffold/schema.json
+messages:
+  pre: |
+    # Rust Project Scaffold
+
+    Generate a new Rust binary project with cross-platform builds and GitHub releases.
+
+  post: |
+    # Get Started
+
+    ```sh
+    cd {{ .ProjectSnake }}
+    cargo test
+    ```
+
+presets:
+  default:
+    msrv: "1.80"
+    edition: "2021"
+
+  test:
+    description: "Test rust scaffold"
+    githubOwner: "test-owner"
+    authorName: "Test Author"
+    msrv: "1.80"
+    edition: "2021"
+    licenceId: "Apache-2.0"
+
+questions:
+  - name: "description"
+    group: "project"
+    prompt:
+      message: "Project description"
+      multi: true
+    required: true
+
+  - name: "githubOwner"
+    group: "project"
+    prompt:
+      message: "GitHub owner (user or org)"
+    required: true
+
+  - name: "authorName"
+    group: "project"
+    prompt:
+      message: "Author/Maintainer name (optional, defaults to GitHub owner)"
+
+  - name: "msrv"
+    group: "project"
+    prompt:
+      message: "Minimum Supported Rust Version (MSRV)"
+      default: "1.80"
+
+  - name: "edition"
+    group: "project"
+    prompt:
+      message: "Rust edition"
+      default: "2021"
+
+  - name: "licenceId"
+    group: "licence"
+    prompt:
+      message: "License"
+      default: "Apache-2.0"
+      options:
+        - "Apache-2.0"
+        - "MIT"
+        - "Apache-2.0 and MIT"
+
+  - name: "useGithubActions"
+    group: "ci"
+    prompt:
+      confirm: "Enable GitHub Actions?"
+      default: true
+
+  - name: "useDependabot"
+    group: "ci"
+    prompt:
+      confirm: "Enable Dependabot?"
+      default: true
+
+  - name: "useGitHubFunding"
+    group: "project"
+    prompt:
+      confirm: "Enable GitHub Funding?"
+      default: true
+
+computed:
+  author: "{{ or .Scaffold.authorName .Scaffold.githubOwner }}"
+  elixirVersion: "~> 1.{{ .Scaffold.elixirVersion }}"
+  githubRepoName: "{{ .Scaffold.githubOwner }}/{{ .ProjectSnake }}"
+  githubUrl: "https://github.com/{{ .Scaffold.githubOwner }}/{{ .ProjectSnake }}"
+  hasApache: '{{ or (eq .Scaffold.licenceId "Apache-2.0") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
+  hasMit: '{{ or (eq .Scaffold.licenceId "MIT") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
+  isDual: '{{ eq .Scaffold.licenceId "Apache-2.0 and MIT" }}'
+  year: '{{ now | date "2006" }}'
+
+features:
+  - value: "{{ .Scaffold.useGithubActions }}"
+    globs:
+      - "**/.github/workflows/**"
+      - "**/.github/zizmor.yml"
+
+  - value: "{{ .Scaffold.useDependabot }}"
+    globs:
+      - "**/.github/dependabot.yml"
+
+  - value: "{{ .Computed.hasApache }}"
+    globs:
+      - "**/licences/APACHE-2.0.txt"
+
+  - value: "{{ .Computed.hasMit }}"
+    globs:
+      - "**/licences/MIT.txt"
+
+  - value: "{{ .Scaffold.useGitHubFunding }}"
+    globs:
+      - "**/.github/FUNDING.yml"
+
+delimiters:
+  - glob: "**/.github/workflows/**"
+    left: "#[[["
+    right: "]]]"

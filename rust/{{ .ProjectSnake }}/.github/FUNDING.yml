@@ -1,0 +1,3 @@
+github: '{{ .Scaffold.githubOwner }}'
+buy_me_a_coffee: '{{ .Scaffold.githubOwner }}'
+ko_fi: '{{ .Scaffold.githubOwner }}'

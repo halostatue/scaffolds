@@ -1,0 +1,44 @@
+packages := "{{ .ProjectSnake }}"
+pkg_dir := "packages"
+
+_default:
+    just --list
+
+test:
+    just {{ "{{ pkg_dir }}" }}/{{ .ProjectSnake }}/test
+
+docs:
+    just {{ "{{ pkg_dir }}" }}/{{ .ProjectSnake }}/docs
+
+docs-open:
+    just {{ "{{ pkg_dir }}" }}/{{ .ProjectSnake }}/docs-open
+
+build:
+    just {{ "{{ pkg_dir }}" }}/{{ .ProjectSnake }}/build
+
+lint:
+    just {{ "{{ pkg_dir }}" }}/{{ .ProjectSnake }}/lint
+
+format-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for pkg in {{ "{{ packages }}" }}; do
+      echo "=== Format check ${pkg} ==="
+      (cd {{ "{{ pkg_dir }}" }}/"${pkg}" && gleam format --check src test)
+    done
+
+format:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for pkg in {{ "{{ packages }}" }}; do
+      echo "=== Format ${pkg} ==="
+      (cd {{ "{{ pkg_dir }}" }}/"${pkg}" && gleam format)
+    done
+
+deps *args="download":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for pkg in {{ "{{ packages }}" }}; do
+      echo "=== Deps ${pkg} ==="
+      (cd {{ "{{ pkg_dir }}" }}/"${pkg}" && gleam deps {{ "{{ args }}" }})
+    done

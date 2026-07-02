@@ -1,0 +1,137 @@
+# yaml-language-server: $schema=https://hay-kot.github.io/scaffold/schema.json
+messages:
+  pre: |
+    # Go Project Scaffold
+
+    Generate a new Go project with standard tooling and structure.
+
+  post: |
+    # Get Started
+
+    ```sh
+    cd {{ .ProjectSnake }}
+    go test ./...
+    ```
+
+presets:
+  default:
+    goVersionMin: "1.24"
+    goVersion: "1.26"
+
+  test:
+    description: "Test go scaffold"
+    githubOwner: "test-owner"
+    authorName: "Test Author"
+    goVersionMin: "1.24"
+    goVersion: "1.26"
+    licenceId: "Apache-2.0"
+
+questions:
+  - name: "description"
+    group: "project"
+    prompt:
+      message: "Project description"
+      multi: true
+    required: true
+
+  - name: "githubOwner"
+    group: "project"
+    prompt:
+      message: "GitHub owner (user or org)"
+    required: true
+
+  - name: "authorName"
+    group: "project"
+    prompt:
+      message: "Author/Maintainer name (optional, defaults to GitHub owner)"
+
+  - name: "goVersionMin"
+    group: "project"
+    prompt:
+      message: "Minimum Go version"
+      default: "1.24"
+
+  - name: "goVersion"
+    group: "project"
+    prompt:
+      message: "Target Go version"
+      default: "1.26"
+
+  - name: "licenceId"
+    group: "licence"
+    prompt:
+      message: "License"
+      default: "Apache-2.0"
+      options:
+        - "Apache-2.0"
+        - "MIT"
+        - "Apache-2.0 and MIT"
+
+  - name: "useGithubActions"
+    group: "ci"
+    prompt:
+      confirm: "Enable GitHub Actions?"
+      default: true
+
+  - name: "useGoreleaser"
+    group: "ci"
+    prompt:
+      confirm: "Enable GoReleaser?"
+      default: true
+
+  - name: "useDependabot"
+    group: "ci"
+    prompt:
+      confirm: "Enable Dependabot?"
+      default: true
+
+  - name: "useGitHubFunding"
+    group: "project"
+    prompt:
+      confirm: "Enable GitHub Funding?"
+      default: true
+
+computed:
+  author: "{{ or .Scaffold.authorName .Scaffold.githubOwner }}"
+  githubRepoName: "{{ .Scaffold.githubOwner }}/{{ .ProjectSnake }}"
+  githubUrl: "https://github.com/{{ .Scaffold.githubOwner }}/{{ .ProjectSnake }}"
+  hasApache: '{{ or (eq .Scaffold.licenceId "Apache-2.0") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
+  hasMit: '{{ or (eq .Scaffold.licenceId "MIT") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
+  isDual: '{{ eq .Scaffold.licenceId "Apache-2.0 and MIT" }}'
+  year: '{{ now | date "2006" }}'
+
+features:
+  - value: "{{ .Scaffold.useGithubActions }}"
+    globs:
+      - "**/.github/workflows/**"
+      - "**/.github/zizmor.yml"
+
+  - value: "{{ .Scaffold.useGoreleaser }}"
+    globs:
+      - "**/.goreleaser.yml"
+
+  - value: "{{ .Scaffold.useDependabot }}"
+    globs:
+      - "**/.github/dependabot.yml"
+
+  - value: "{{ .Computed.hasApache }}"
+    globs:
+      - "**/licences/APACHE-2.0.txt"
+
+  - value: "{{ .Computed.hasMit }}"
+    globs:
+      - "**/licences/MIT.txt"
+
+  - value: "{{ .Scaffold.useGitHubFunding }}"
+    globs:
+      - "**/.github/FUNDING.yml"
+
+delimiters:
+  - glob: "**/.github/workflows/**"
+    left: "#[[["
+    right: "]]]"
+
+  - glob: "**/.goreleaser.yml"
+    left: "#[[["
+    right: "]]]"
+
