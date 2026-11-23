@@ -1,6 +1,6 @@
 # {{ .Computed.githubRepoName }}
 
-[![Version][version]]({{.Computed.githubUrl}}/releases)
+[![Version](https://img.shields.io/github/tag/{{ .Computed.githubRepoName }}.svg?label=Version)]({{.Computed.githubUrl}}/releases)
 
 {{ .Scaffold.description }}
 
@@ -29,21 +29,11 @@ $ {{ .ProjectSnake }} example
 example output
 ```
 
-## Licence
+## Semantic Versioning
 
-[{{ .Scaffold.licenceId }}](./LICENCE.md)
-
-## Change Log
-
-[CHANGELOG](./CHANGELOG.md)
-
-## Contributing
-
-- [Contributing](./CONTRIBUTING.md)
-- [Contributors](./CONTRIBUTORS.md)
-- [Code of Conduct](./CODE_OF_CONDUCT.md)
+{{ .ProjectPascal }} follows [Semantic Versioning 2.0][semver].
 
 [fish shell]: https://fishshell.com "friendly interactive shell"
-[fisher]: https://github.com/jorgebucaran/fisher
 [fish]: https://github.com/fish-shell/fish-shell
-[version]: https://img.shields.io/github/tag/{{ .Computed.githubRepoName }}.svg?label=Version
+[fisher]: https://github.com/jorgebucaran/fisher
+[semver]: https://semver.org/

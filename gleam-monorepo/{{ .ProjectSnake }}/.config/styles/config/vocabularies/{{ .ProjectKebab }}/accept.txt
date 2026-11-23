@@ -1,0 +1,17 @@
+{{ if .Scaffold.includeAIPolicy -}}
+Ghostty
+Grinberg
+Nijhof
+Theocharis
+Ghostty
+{{- end }}
+[nN]eurodiversity
+[sS]exualization
+{{ if .Scaffold.useGithubActions -}}
+[rR]eviewdog
+[aA]ctionlint
+[zZ]izmor
+{{- end }}
+gleeunit
+glinter
+fn

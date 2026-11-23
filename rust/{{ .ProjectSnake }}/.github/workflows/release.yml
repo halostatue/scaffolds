@@ -3,16 +3,22 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
-  workflow_dispatch:
+      - 'v*.*.*'
 
-permissions:
-  contents: write
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
 
 jobs:
   build:
     name: Build ${{ matrix.target }}
+
     runs-on: ${{ matrix.os }}
+
+    permissions:
+      contents: read
 
     strategy:
       fail-fast: false
@@ -22,10 +28,8 @@ jobs:
             os: ubuntu-latest
           - target: aarch64-unknown-linux-gnu
             os: ubuntu-latest
-          - target: x86_64-apple-darwin
-            os: macos-13
           - target: aarch64-apple-darwin
-            os: macos-14
+            os: macos-15
           - target: x86_64-pc-windows-msvc
             os: windows-latest
           - target: aarch64-pc-windows-msvc
@@ -33,21 +37,13 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-
-      - uses: Swatinem/rust-cache@82a92a6e8fbeee089604da2575dc567ae9ddeaab # v2.7.5
-        with:
-          key: ${{ matrix.target }}
 
       - name: Install cross-compilation tools
         if: matrix.target == 'aarch64-unknown-linux-gnu'
@@ -55,25 +51,44 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-aarch64-linux-gnu
 
-      - name: Build
-        run: cargo build --release --target ${{ matrix.target }}
+      - run: rustup default stable-"${TARGET}"
+        env:
+          TARGET: ${{ matrix.target }}
+
+      - name: Build (Unix)
+        if: runner.os != 'Windows'
+        run: cargo build --release --target "${TARGET}"
+        env:
+          TARGET: ${{ matrix.target }}
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        run: cargo build --release --target "${env:TARGET}"
+        env:
+          TARGET: ${{ matrix.target }}
 
       - name: Package (Unix)
         if: runner.os != 'Windows'
         run: |
-          cd target/${{ matrix.target }}/release
-          tar czf #[[[ .ProjectSnake ]]]-${{ matrix.target }}.tar.gz #[[[ .ProjectSnake ]]]
-          mv #[[[ .ProjectSnake ]]]-${{ matrix.target }}.tar.gz ${{ github.workspace }}
+          cd target/"${TARGET}"/release
+          tar czf "#[[[ .ProjectSnake ]]]-${TARGET}.tar.gz" "#[[[ .ProjectSnake ]]]"
+          mv "#[[[ .ProjectSnake ]]]-${TARGET}.tar.gz" "${WORKSPACE}"
+        env:
+          TARGET: ${{ matrix.target }}
+          WORKSPACE: ${{ github.workspace }}
 
       - name: Package (Windows)
         if: runner.os == 'Windows'
         run: |
-          cd target/${{ matrix.target }}/release
-          7z a #[[[ .ProjectSnake ]]]-${{ matrix.target }}.zip #[[[ .ProjectSnake ]]].exe
-          move #[[[ .ProjectSnake ]]]-${{ matrix.target }}.zip ${{ github.workspace }}
+          cd target/${env:TARGET}/release
+          7z a "#[[[ .ProjectSnake ]]]-${env:TARGET}.zip" "#[[[ .ProjectSnake ]]].exe"
+          move "#[[[ .ProjectSnake ]]]-${env:TARGET}.zip" "${env:WORKSPACE}"
+        env:
+          TARGET: ${{ matrix.target }}
+          WORKSPACE: ${{ github.workspace }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: '#[[[ .ProjectSnake ]]]-${{ matrix.target }}'
           path: |
@@ -85,24 +100,31 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
 
+    environment: release
+
+    permissions:
+      contents: write # Publish the release
+
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          persist-credentials: false
-
       - name: Download artifacts
-        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.0
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: artifacts
 
-      - name: Create Release
-        uses: softprops/action-gh-release@e7a8f85e1c67a31e6ed99a94b41bd0b71bbee6b8 # v2.2.0
-        with:
-          files: artifacts/**/*
-          draft: true
-          generate_release_notes: true
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          mapfile -d '' files < <(find artifacts -type f -print0)
+          gh release create "${TAG}" "${files[@]}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --draft \
+            --generate-notes \
+            --verify-tag \
+            --title "${TAG}"

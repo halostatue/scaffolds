@@ -15,15 +15,15 @@ messages:
 
 presets:
   default:
-    goVersionMin: "1.24"
-    goVersion: "1.26"
+    goVersionMin: "1.26"
+    goVersion: "1.27"
 
   test:
     description: "Test go scaffold"
     githubOwner: "test-owner"
     authorName: "Test Author"
-    goVersionMin: "1.24"
-    goVersion: "1.26"
+    goVersionMin: "1.26"
+    goVersion: "1.27"
     licenceId: "Apache-2.0"
 
 questions:
@@ -49,13 +49,13 @@ questions:
     group: "project"
     prompt:
       message: "Minimum Go version"
-      default: "1.24"
+      default: "1.26"
 
   - name: "goVersion"
     group: "project"
     prompt:
       message: "Target Go version"
-      default: "1.26"
+      default: "1.27"
 
   - name: "licenceId"
     group: "licence"
@@ -71,12 +71,6 @@ questions:
     group: "ci"
     prompt:
       confirm: "Enable GitHub Actions?"
-      default: true
-
-  - name: "useGoreleaser"
-    group: "ci"
-    prompt:
-      confirm: "Enable GoReleaser?"
       default: true
 
   - name: "useDependabot"
@@ -98,17 +92,15 @@ computed:
   hasApache: '{{ or (eq .Scaffold.licenceId "Apache-2.0") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
   hasMit: '{{ or (eq .Scaffold.licenceId "MIT") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
   isDual: '{{ eq .Scaffold.licenceId "Apache-2.0 and MIT" }}'
+  valeGrammars: '{{ "go,yaml" | splitList "," | join ", " }}'
   year: '{{ now | date "2006" }}'
 
 features:
   - value: "{{ .Scaffold.useGithubActions }}"
     globs:
+      - "**/.github/dco-check.yml"
       - "**/.github/workflows/**"
       - "**/.github/zizmor.yml"
-
-  - value: "{{ .Scaffold.useGoreleaser }}"
-    globs:
-      - "**/.goreleaser.yml"
 
   - value: "{{ .Scaffold.useDependabot }}"
     globs:
@@ -126,8 +118,16 @@ features:
     globs:
       - "**/.github/FUNDING.yml"
 
+  - value: "{{ .Scaffold.includeAIPolicy }}"
+    globs:
+      - "**/AI_POLICY.md"
+
 delimiters:
   - glob: "**/.github/workflows/**"
+    left: "#[[["
+    right: "]]]"
+
+  - glob: ".vale.ini"
     left: "#[[["
     right: "]]]"
 
@@ -135,3 +135,6 @@ delimiters:
     left: "#[[["
     right: "]]]"
 
+  - glob: "**/.golangci.yml"
+    left: "#[[["
+    right: "]]]"

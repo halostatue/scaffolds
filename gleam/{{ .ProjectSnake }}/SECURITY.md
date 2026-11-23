@@ -2,18 +2,18 @@
 
 ## LLM-Generated Security Report Policy
 
-Absolutely no security reports will be accepted that have been generated solely by LLM
-agents. There must be a human that confirms the issue.
+Absolutely no security reports will be accepted that have been generated
+solely by LLM agents. There must be a human that confirms the issue.
 
 ## Supported Versions
 
-Security reports are accepted for the most recent major release with support for
-the previous major version ending immediately.
+Security reports are accepted for the most recent major release with support
+for the previous major version ending immediately.
 
 `{{ .ProjectSnake }}` supports the two most recent major versions of Gleam
-(currently `{{ .Computed.gleamPrevMinor }}` and {{ .Computed.gleamCurrMinor }})
-and is tested on Node 24, Node 26, the latest Bun, the latest Deno, and Erlang
-OTP 27, 28, and 29.
+(currently `{{ .Computed.gleamPrevMinor }}` and
+`{{ .Computed.gleamCurrMinor }}`) and is tested on Node 24, Node 26, the
+latest Bun, the latest Deno, and Erlang OTP 27, 28, and 29.
 
 ## Reporting a Vulnerability
 

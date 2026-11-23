@@ -14,67 +14,101 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  go-ci:
-    name: Go ${{ matrix.go-version }}
+  test:
+    name: Test (Go ${{ matrix.go-version }})
 
     strategy:
       fail-fast: false
       matrix:
         include:
           - go-version: '#[[[ .Scaffold.goVersionMin ]]]'
-            os: ubuntu-latest
-          - go-version: '1.25'
-            os: ubuntu-latest
+            os: ubuntu-24.04
           - go-version: '#[[[ .Scaffold.goVersion ]]]'
-            os: ubuntu-latest
-            check_formatted: true
-            staticcheck: true
-            govulncheck: true
-
+            os: ubuntu-24.04
     runs-on: ${{ matrix.os }}
+
+    env:
+      GOTOOLCHAIN: local
 
     permissions:
       contents: read
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: block
           allowed-endpoints: >
             github.com:443
             proxy.golang.org:443
-            sum.golang.org:443
             release-assets.githubusercontent.com:443
+            sum.golang.org:443
+            vuln.go.dev:443
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a # v6.0.0
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: ${{ matrix.go-version }}
           cache: true
 
+      - run: go test -race ./...
+
+      - run: go build ./...
+
+      - name: Cross-compile release targets
+        run: |
+          for os in darwin freebsd linux openbsd; do
+            for arch in amd64 arm64; do
+              echo "==> ${os}/${arch}"
+              GOOS="${os}" GOARCH="${arch}" go build ./...
+            done
+          done
+
+  quality:
+    name: Quality
+    runs-on: ubuntu-24.04
+
+    env:
+      GOTOOLCHAIN: local
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
+        with:
+          egress-policy: block
+          allowed-endpoints: >
+            github.com:443
+            mise.jdx.dev:443
+            proxy.golang.org:443
+            release-assets.githubusercontent.com:443
+            sum.golang.org:443
+            vuln.go.dev:443
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d # v5.2.9
+
       - run: go mod download
 
-      - run: test -z "$(gofmt -l .)"
-        if: matrix.check_formatted
+      - name: Check formatting
+        run: |
+          files=("$(gofumpt -l .)")
+          if ((${#files})); then
+            echo >&2 "Unformatted files:"
+            printf >&2 "  %s\n" "${files[@]}"
+            exit 1
+          fi
 
       - run: go vet ./...
 
-      - run: go install honnef.co/go/tools/cmd/staticcheck@latest
-        if: matrix.staticcheck
+      - run: golangci-lint run
 
-      - run: staticcheck ./...
-        if: matrix.staticcheck
-
-      - run: go install golang.org/x/vuln/cmd/govulncheck@latest
-        if: matrix.govulncheck
-
-      - run: govulncheck ./...
-        if: matrix.govulncheck
-
-      - run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
-
-      - run: go build ./...
+      - run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...

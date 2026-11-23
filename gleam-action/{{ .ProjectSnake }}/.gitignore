@@ -16,3 +16,4 @@ lib/
 logs/
 node_modules/
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+/.config/styles/config/grammars/

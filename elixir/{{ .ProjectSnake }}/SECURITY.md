@@ -1,14 +1,14 @@
-# {{ .ProjectPascal }} Security
+# {{ .ProjectPascal }} Security Policy
 
 ## LLM-Generated Security Report Policy
 
-Absolutely no security reports will be accepted that have been generated solely
-by LLM agents. There must be a human that confirms the issue.
+Absolutely no security reports will be accepted that have been generated
+solely by LLM agents. There must be a human that confirms the issue.
 
 ## Supported Versions
 
-Security reports are accepted for the most recent major release with support for
-the previous major version ending immediately.
+Security reports are accepted for the most recent major release with support
+for the previous major version ending immediately.
 
 {{ .ProjectPascal }} supports at most the three most recent versions of Elixir
 and supported [Erlang/OTP versions][otp-versions].
@@ -17,7 +17,6 @@ As of {{ now | date "January 2006" }}, the support list is:
 
 | Elixir | Erlang         |
 | ------ | -------------- |
-| 1.17   | 25, 26, 27, 28 |
 | 1.18   | 25, 26, 27, 28 |
 | 1.19   | 26, 27, 28     |
 | 1.20   | 27, 28, 29     |
@@ -30,4 +29,4 @@ after the release of a new version of Elixir.
 Create a [private vulnerability report][advisory] with GitHub.
 
 [advisory]: {{.Computed.githubUrl}}/security/advisories/new
-[otp-versions]: https://hexdocs.pm/elixir/compatibility-and-deprecations.html#between-elixir-and-erlang-otp
+[otp-versions]: https://elixir.hexdocs.pm/compatibility-and-deprecations.html#between-elixir-and-erlang-otp

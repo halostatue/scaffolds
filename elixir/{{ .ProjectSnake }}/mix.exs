@@ -1,13 +1,12 @@
 defmodule {{ .ProjectPascal }}.MixProject do
   use Mix.Project
 
-  @app :"{{ .ProjectSnake }}"
   @project_url "{{ .Computed.githubUrl }}"
   @version "0.1.0"
 
   def project do
     [
-      app: @app,
+      app: :{{ .ProjectSnake }},
       description: "{{ .Scaffold.description }}",
       version: @version,
       source_url: @project_url,
@@ -22,16 +21,16 @@ defmodule {{ .ProjectPascal }}.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       dialyzer: [
         plt_add_apps: [:mix],
-        plt_local_path: "priv/plts/project.plt",
-        plt_core_path: "priv/plts/core.plt"
+        plt_local_path: "priv/plts"
+      ],
+      hex: [
+        ignore_advisories: hex_ignore_advisories()
       ]
     ]
   end
 
   def application do
-    [
-      extra_applications: [:logger]
-    ]
+    [extra_applications: [:logger]]
   end
 
   def cli do
@@ -56,7 +55,7 @@ defmodule {{ .ProjectPascal }}.MixProject do
         {{ if .Computed.hasApache }}"Apache-2.0",{{ end }}
         {{ if .Computed.hasMit }}"MIT",{{ end }}
       ],
-      files: ~w(lib .formatter.exs mix.exs *.md),
+      files: ~w(lib .formatter.exs mix.exs *.md licences),
       links: %{
         "Source" => @project_url,
         "Issues" => @project_url <> "/issues"
@@ -69,15 +68,16 @@ defmodule {{ .ProjectPascal }}.MixProject do
       {:castore, "~> 1.0", optional: true},
       {:credo, "~> 1.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.18", only: [:test]},
       {:ex_doc, "~> 0.29", only: [:dev, :test], runtime: false},
-      {:quokka, "~> 2.6", only: [:dev, :test], runtime: false}
+      {:excoveralls, "~> 0.18", only: [:test]},
+      {:quokka, "~> 2.6", only: [:dev, :test], runtime: false},
+      {:sobelow, "~> 0.14", only: [:dev, :test]}
     ]
   end
 
   defp docs do
     [
-      main: "{{ .ProjectPascal }}",
+      main: "readme",
       extras: [
         "README.md",
         "CONTRIBUTING.md": [filename: "CONTRIBUTING", title: "Contributing"],
@@ -94,7 +94,7 @@ defmodule {{ .ProjectPascal }}.MixProject do
       ],
       source_ref: "v#{@version}",
       source_url: @project_url,
-      canonical: "https://hexdocs.pm/#{@app}"
+      canonical: "https://{{ .ProjectKebab }}hexdocs.pm/"
     ]
   end
 
@@ -102,5 +102,9 @@ defmodule {{ .ProjectPascal }}.MixProject do
     [
       tool: ExCoveralls
     ]
+  end
+
+  defp hex_ignore_advisories do
+    []
   end
 end

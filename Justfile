@@ -1,6 +1,22 @@
 default:
     just --list
 
+# Mark all for editing
+edit-all:
+    #!/usr/bin/env fish
+
+    for scaffold in elixir fish gleam gleam-action gleam-monorepo go ruby rust
+      just edit $scaffold
+    end
+
+# Mark all for commit
+save-all:
+    #!/usr/bin/env fish
+
+    for scaffold in elixir fish gleam gleam-action gleam-monorepo go ruby rust
+      just save $scaffold
+    end
+
 # Make the templated files easily editable by renaming {{ to [[
 edit scaffold="": (_rename "edit" scaffold)
 
@@ -32,7 +48,8 @@ test scaffold:
 
     set --local extra useGitHubActions:bool=true \
         useGitHubFunding:bool=true \
-        useDependabot:bool=true
+        useDependabot:bool=true \
+        useAIPolicy:bool=true
 
     switch $scaffold
         case elixir fish ruby rust
@@ -117,7 +134,7 @@ _rename direction scaffold="":
 
         # Rename directories one at a time until none remain
         while true
-            set dir (fd -td $pattern | head -n1)
+            set dir (fd -H -td $pattern | head -n1)
             test -z "$dir"; and break
 
             set newdir (string replace -a $from $to $dir)
@@ -125,7 +142,7 @@ _rename direction scaffold="":
         end
 
         # Rename all files
-        for file in (fd -tf $pattern)
+        for file in (fd -H -tf $pattern)
             set newfile (string replace -a $from $to $file)
             git mv $file $newfile
         end

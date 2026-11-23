@@ -15,14 +15,14 @@ messages:
 
 presets:
   default:
-    gleamMinorVersion: "17"
+    gleamMinorVersion: "19"
 
   test:
     description: "Test gleam-monorepo scaffold"
     githubOwner: "test-owner"
     authorName: "Test Author"
-    gleamMinorVersion: "17"
-    licenceId: "Apache-2.0 and MIT"
+    gleamMinorVersion: "19"
+    licenceId: "Apache-2.0"
 
 questions:
   - name: "description"
@@ -47,7 +47,13 @@ questions:
     group: "project"
     prompt:
       message: "Gleam minor version (integer, e.g. 15 for 1.15)"
-      default: "17"
+      default: "19"
+
+  - name: "includeAIPolicy"
+    group: "project"
+    prompt:
+      confirm: "Include AI Policy?"
+      default: true
 
   - name: "licenceId"
     group: "licence"
@@ -88,13 +94,17 @@ computed:
   hasApache: '{{ or (eq .Scaffold.licenceId "Apache-2.0") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
   hasMit: '{{ or (eq .Scaffold.licenceId "MIT") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
   isDual: '{{ eq .Scaffold.licenceId "Apache-2.0 and MIT" }}'
+  # Erlang and Gleam aren't yet supported by vale
+  valeGrammars: '{{ "javascript,yaml" | splitList "," | join ", " }}'
   year: '{{ now | date "2006" }}'
 
 features:
   - value: "{{ .Scaffold.useGithubActions }}"
     globs:
+      - "**/.github/dco-check.yml"
       - "**/.github/workflows/**"
       - "**/.github/zizmor.yml"
+      - "**/.config/styles/config/views/GHA.yml"
 
   - value: "{{ .Scaffold.useDependabot }}"
     globs:
@@ -112,7 +122,15 @@ features:
     globs:
       - "**/.github/FUNDING.yml"
 
+  - value: "{{ .Scaffold.includeAIPolicy }}"
+    globs:
+      - "**/AI_POLICY.md"
+
 delimiters:
   - glob: "**/.github/workflows/**"
+    left: "#[[["
+    right: "]]]"
+
+  - glob: ".vale.ini"
     left: "#[[["
     right: "]]]"

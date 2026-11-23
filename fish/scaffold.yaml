@@ -20,7 +20,7 @@ presets:
     description: "Test fish scaffold"
     githubOwner: "test-owner"
     authorName: "Test Author"
-    licenceId: "MIT"
+    licenceId: "Apache-2.0"
 
 questions:
   - name: "description"
@@ -41,11 +41,17 @@ questions:
     prompt:
       message: "Author/Maintainer name (optional, defaults to GitHub owner)"
 
+  - name: "includeAIPolicy"
+    group: "project"
+    prompt:
+      confirm: "Include AI Policy?"
+      default: true
+
   - name: "licenceId"
     group: "licence"
     prompt:
       message: "License"
-      default: "MIT"
+      default: "Apache-2.0"
       options:
         - "Apache-2.0"
         - "MIT"
@@ -76,11 +82,14 @@ computed:
   hasApache: '{{ or (eq .Scaffold.licenceId "Apache-2.0") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
   hasMit: '{{ or (eq .Scaffold.licenceId "MIT") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
   isDual: '{{ eq .Scaffold.licenceId "Apache-2.0 and MIT" }}'
+  # Fish isn't yet supported by vale
+  valeGrammars: '{{ "yaml" | splitList "," | join ", " }}'
   year: '{{ now | date "2006" }}'
 
 features:
   - value: "{{ .Scaffold.useGithubActions }}"
     globs:
+      - "**/.github/dco-check.yml"
       - "**/.github/workflows/**"
       - "**/.github/zizmor.yml"
 
@@ -100,8 +109,16 @@ features:
     globs:
       - "**/.github/FUNDING.yml"
 
+  - value: "{{ .Scaffold.includeAIPolicy }}"
+    globs:
+      - "**/AI_POLICY.md"
+
 delimiters:
   - glob: "**/.github/workflows/**"
+    left: "#[[["
+    right: "]]]"
+
+  - glob: ".vale.ini"
     left: "#[[["
     right: "]]]"
 

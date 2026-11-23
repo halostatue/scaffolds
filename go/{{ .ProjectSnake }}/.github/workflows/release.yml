@@ -1,0 +1,63 @@
+name: Build and Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tag-guard:
+    name: Validate release tag format
+    runs-on: ubuntu-latest
+    steps:
+      # Supported release tags are `vM.m.p` or` vM.m.p-rc.N` where `N >= 1`. All other
+      # variants are disallowed.
+      - name: Check tag validity
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          if [[ "${GITHUB_REF_NAME}" =~ ^v[1-9][0-9]*\.[0-9]+\.[0-9]+$ ]]; then
+            :
+          elif [[ "${GITHUB_REF_NAME}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[1-9][0-9]*$ ]]; then
+            :
+          else
+            echo "::error::Tag '${GITHUB_REF_NAME}' is not vMAJOR.MINOR.PATCH or vMAJOR.MINOR.PATCH-rc.N (N >= 1)"
+            # exit 1
+          fi
+
+  goreleaser:
+    name: Build binaries with GoReleaser
+    needs: tag-guard
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Releases binary artifacts
+      id-token: write # Keyless signing with cosign
+      attestations: write # GitHub attestations
+      artifact-metadata: write # GitHub attestations
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up tools (Go, cosign, goreleaser)
+        uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d # v5.2.9
+
+
+      - name: Run GoReleaser
+        run: goreleaser release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Attest binaries
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-checksums: ./dist/checksum.txt

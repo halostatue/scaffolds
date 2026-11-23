@@ -1,5 +1,5 @@
 # {{ .Computed.githubRepoName }} Changelog
 
-## 1.0 / YYYY-MM-DD
+## VERSION / YYYY-MM-DD
 
 - Initial release.

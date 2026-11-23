@@ -1,9 +1,9 @@
 # {{ .ProjectPascal }}
 
-[![Hex.pm](https://img.shields.io/hexpm/v/{{.ProjectSnake}}.svg?style=for-the-badge)][hexpm]
+[![Hex.pm](https://img.shields.io/hexpm/v/{{.ProjectSnake}}.svg?style=for-the-badge "Hex Version")](https://hex.pm/packages/{{.ProjectSnake}})
 [![Hex Docs](https://img.shields.io/badge/hex-docs-purple.svg?style=for-the-badge)][docs]
 [![{{ .Scaffold.licenceId }}](https://img.shields.io/hexpm/l/{{.ProjectSnake}}.svg?style=for-the-badge "{{ .Scaffold.licenceId }}")]({{.Computed.githubUrl}}/blob/main/LICENCE.md)
-![Coveralls](https://img.shields.io/coverallsCoverage/github/{{.Computed.githubRepoName}}?style=for-the-badge)
+![Coverage](https://img.shields.io/coverallsCoverage/github/{{.Computed.githubRepoName}}?style=for-the-badge "Coverage")
 
 - code :: <{{ .Computed.githubUrl }}>
 - issues :: <{{ .Computed.githubUrl }}/issues>
@@ -29,5 +29,4 @@ Documentation is found on [HexDocs][docs].
 {{ .ProjectPascal }} follows [Semantic Versioning 2.0][semver].
 
 [docs]: https://{{.ProjectKebab}}.hexdocs.pm/
-[hexpm]: https://hex.pm/packages/{{.ProjectSnake}}
 [semver]: https://semver.org/

@@ -1,17 +1,16 @@
-name: Gleam Test
+name: Gleam verify
 
 on:
   push:
     branches:
       - main
   pull_request:
-  workflow_dispatch:
-
-permissions: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
+permissions: {}
 
 jobs:
   test-beam:
@@ -72,7 +71,7 @@ jobs:
           path: |
             **/build
 
-      - name: Deps #[[[ .ProjectSnake ]]]
+      - name: Dependencies for #[[[ .ProjectSnake ]]]
         run: gleam deps download
         working-directory: packages/#[[[ .ProjectSnake ]]]
 
@@ -149,7 +148,7 @@ jobs:
           path: |
             **/build
 
-      - name: Deps #[[[ .ProjectSnake ]]]
+      - name: Dependencies for #[[[ .ProjectSnake ]]]
         run: gleam deps download
         working-directory: packages/#[[[ .ProjectSnake ]]]
 
@@ -217,7 +216,7 @@ jobs:
           path: |
             **/build
 
-      - name: Deps #[[[ .ProjectSnake ]]]
+      - name: Dependencies for #[[[ .ProjectSnake ]]]
         run: gleam deps download
         working-directory: packages/#[[[ .ProjectSnake ]]]
 
@@ -285,7 +284,7 @@ jobs:
           path: |
             **/build
 
-      - name: Deps #[[[ .ProjectSnake ]]]
+      - name: Dependencies for #[[[ .ProjectSnake ]]]
         run: gleam deps download
         working-directory: packages/#[[[ .ProjectSnake ]]]
 

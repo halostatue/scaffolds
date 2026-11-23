@@ -71,6 +71,12 @@ questions:
       message: "Ruby versions for CI matrix (space-separated)"
       default: "3.3 3.4 4.0"
 
+  - name: "includeAIPolicy"
+    group: "project"
+    prompt:
+      confirm: "Include AI Policy?"
+      default: true
+
   - name: "licenceId"
     group: "licence"
     prompt:
@@ -101,17 +107,18 @@ questions:
 
 computed:
   author: "{{ or .Scaffold.authorName .Scaffold.githubOwner }}"
-  elixirVersion: "~> 1.{{ .Scaffold.elixirVersion }}"
   githubRepoName: "{{ .Scaffold.githubOwner }}/{{ .ProjectSnake }}"
   githubUrl: "https://github.com/{{ .Scaffold.githubOwner }}/{{ .ProjectSnake }}"
   hasApache: '{{ or (eq .Scaffold.licenceId "Apache-2.0") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
   hasMit: '{{ or (eq .Scaffold.licenceId "MIT") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
   isDual: '{{ eq .Scaffold.licenceId "Apache-2.0 and MIT" }}'
+  valeGrammars: '{{ "ruby,yaml" | splitList "," | join ", " }}'
   year: '{{ now | date "2006" }}'
 
 features:
   - value: "{{ .Scaffold.useGithubActions }}"
     globs:
+      - "**/.github/dco-check.yml"
       - "**/.github/workflows/**"
       - "**/.github/zizmor.yml"
 
@@ -131,7 +138,15 @@ features:
     globs:
       - "**/.github/FUNDING.yml"
 
+  - value: "{{ .Scaffold.includeAIPolicy }}"
+    globs:
+      - "**/AI_POLICY.md"
+
 delimiters:
   - glob: "**/.github/workflows/**"
+    left: "#[[["
+    right: "]]]"
+
+  - glob: ".vale.ini"
     left: "#[[["
     right: "]]]"

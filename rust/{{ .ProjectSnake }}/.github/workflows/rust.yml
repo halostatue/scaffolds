@@ -22,15 +22,15 @@ jobs:
       matrix:
         include:
           - rust: stable
-            os: ubuntu-latest
+            os: ubuntu-24.04
             check_fmt: true
             clippy: true
           - rust: beta
-            os: ubuntu-latest
+            os: ubuntu-24.04
           - rust: nightly
-            os: ubuntu-latest
+            os: ubuntu-24.04
           - rust: '#[[[ .Scaffold.msrv ]]]'
-            os: ubuntu-latest
+            os: ubuntu-24.04
 
     runs-on: ${{ matrix.os }}
 
@@ -39,7 +39,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2.14.2
+        uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: block
           allowed-endpoints: >
@@ -49,16 +49,23 @@ jobs:
             static.crates.io:443
             static.rust-lang.org:443
 
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
-      - uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust }}
-          components: ${{ matrix.check_fmt && 'rustfmt' || '' }}${{ matrix.clippy && ',clippy' || '' }}
+      - name: Install Rust
+        env:
+          RUST: ${{ matrix.rust }}
+          CHECK_FMT: ${{ matrix.check_fmt }}
+          CLIPPY: ${{ matrix.clippy }}
+        run: |
+          args=(--profile minimal --no-self-update)
+          [[ $CHECK_FMT == true ]] && args+=(--component rustfmt)
+          [[ $CLIPPY == true ]] && args+=(--component clippy)
+          rustup toolchain install "$RUST" "${args[@]}"
+          rustup default "$RUST"
 
-      - uses: Swatinem/rust-cache@82a92a6e8fbeee089604da2575dc567ae9ddeaab # v2.7.5
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
 
       - run: cargo fmt --check
         if: matrix.check_fmt
