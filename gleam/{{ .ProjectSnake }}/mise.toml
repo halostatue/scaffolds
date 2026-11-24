@@ -1,0 +1,18 @@
+[tools]
+gleam = "{{ .Computed.gleamMiseVersion }}"
+node = "24"
+#[[[ if .Scaffold.useGitHubActions -]]]
+pinact = "5.0"
+zizmor = "1.33"
+#[[[- end ]]]
+
+[tasks]
+build = ["gleam build --target erlang", "gleam build --target javascript"]
+docs = "gleam docs build"
+format = "gleam format"
+lint = "gleam run -m glinter"
+test = ["gleam test --target erlang", "gleam test --target javascript"]
+
+[tasks."docs:open"]
+depends = ["docs"]
+run = "open build/dev/docs/#[[[ .ProjectSnake ]]]/index.html"

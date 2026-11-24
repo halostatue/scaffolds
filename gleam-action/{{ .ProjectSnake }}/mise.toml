@@ -1,0 +1,13 @@
+[tools]
+gleam = "{{ .Computed.gleamMiseVersion }}"
+node = "24"
+#[[[ if .Scaffold.useGitHubActions -]]]
+pinact = "5.0"
+zizmor = "1.33"
+#[[[- end ]]]
+
+[tasks]
+build = ["gleam build", "gleam run -m pontil_build"]
+test = "gleam test"
+lint = "gleam run -m glinter"
+format = "gleam format"

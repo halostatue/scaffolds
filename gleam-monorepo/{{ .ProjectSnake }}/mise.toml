@@ -1,0 +1,76 @@
+monorepo_root = true
+
+[monorepo]
+config_roots = ["packages/*"]
+lockfile = true
+
+[tools]
+gleam = "{{ .Computed.gleamMiseVersion }}"
+node = "24"
+#[[[ if .Scaffold.useGitHubActions -]]]
+pinact = "5.0"
+zizmor = "1.33"
+#[[[- end ]]]
+
+[task_templates."gleam:build:erlang"]
+description = "Build a Gleam project (Erlang)"
+run = "gleam build --target erlang"
+
+[task_templates."gleam:build:javascript"]
+description = "Build a Gleam project (JavaScript)"
+run = "gleam build --target javascript"
+
+[task_templates."gleam:build"]
+description = "Build a Gleam project"
+depends = ["build:erlang", "build:javascript"]
+
+[task_templates."gleam:test:erlang"]
+description = "Test a Gleam project (Erlang)"
+run = "gleam test --target erlang"
+
+[task_templates."gleam:test:javascript"]
+description = "Test a Gleam project (JavaScript)"
+run = "gleam test --target javascript"
+
+[task_templates."gleam:test"]
+description = "Test a Gleam project"
+depends = ["test:erlang", "test:javascript"]
+
+[task_templates."gleam:lint"]
+run = "gleam run -m glinter"
+
+[task_templates."gleam:format:check"]
+run = "gleam format --check"
+
+[task_templates."gleam:format"]
+run = "gleam format"
+
+[task_templates."gleam:docs"]
+run = "gleam docs build"
+
+[task_templates."gleam:docs:open"]
+depends = ["docs"]
+
+[task_templates."gleam:deps:download"]
+run = "gleam deps download"
+
+[tasks.test]
+depends = ["//...:test"]
+
+[task.docs]
+depends = ["//...:docs"]
+
+[task.build]
+depends = ["//...:build"]
+
+[task.lint]
+depends = ["//...:lint"]
+
+[task."format:check"]
+depends = ["//...:format:check"]
+
+[task.format]
+depends = ["//...:format"]
+
+[task."deps:download"]
+depends = ["//...:deps:download"]

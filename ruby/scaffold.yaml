@@ -87,7 +87,7 @@ questions:
         - "MIT"
         - "Apache-2.0 and MIT"
 
-  - name: "useGithubActions"
+  - name: "useGitHubActions"
     group: "ci"
     prompt:
       confirm: "Enable GitHub Actions?"
@@ -116,7 +116,7 @@ computed:
   year: '{{ now | date "2006" }}'
 
 features:
-  - value: "{{ .Scaffold.useGithubActions }}"
+  - value: "{{ .Scaffold.useGitHubActions }}"
     globs:
       - "**/.github/dco-check.yml"
       - "**/.github/workflows/**"
@@ -148,5 +148,9 @@ delimiters:
     right: "]]]"
 
   - glob: ".vale.ini"
+    left: "#[[["
+    right: "]]]"
+
+  - glob: "mise.toml"
     left: "#[[["
     right: "]]]"

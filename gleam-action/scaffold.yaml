@@ -10,8 +10,8 @@ messages:
 
     ```sh
     cd {{ .ProjectSnake }}
-    gleam test
-    just build
+    mise run test
+    mise run build
     ```
 
 presets:
@@ -143,5 +143,9 @@ delimiters:
     right: "]]]"
 
   - glob: "**/action.yml"
+    left: "#[[["
+    right: "]]]"
+
+  - glob: "mise.toml"
     left: "#[[["
     right: "]]]"

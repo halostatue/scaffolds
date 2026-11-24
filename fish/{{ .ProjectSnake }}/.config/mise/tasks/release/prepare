@@ -1,0 +1,34 @@
+#!/usr/bin/env fish
+#MISE description="Ensure that all .fish have comment-version tags"
+#USAGE arg "<version>" help="The version to tag"
+
+function escape
+    string escape --style=regex -- $argv
+end
+
+if ! string match -rq '^[0-9]+\.[0-9]+\.[0-9]+$' $usage_version
+    echo >&2 Invalid version: $usage_version
+    exit 1
+end
+
+if ! string match -rq '^##\s+'(escape $usage_version)'\b' <CHANGELOG.md
+    echo >&2 Version $usage_version is not mentioned in the changelog.
+    exit 1
+end
+
+for file in **.fish
+    set -l header '# '$PROJECT_BASE'/'$file':v'$usage_version
+    set -l pattern '^'(escape "# $PROJECT_BASE/$file")'(:v[0-9.]*)?$'
+    set -l lines (cat $file)
+
+    if string match -rq -- $pattern $lines
+        # header exists, with or without a version: rewrite it
+        string replace -r -- $pattern $header $lines >$file
+    else
+        # no header: prepend one plus a blank line
+        begin
+            printf '%s\n\n' $header
+            printf '%s\n' $lines
+        end >$file
+    end
+end

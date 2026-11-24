@@ -1,0 +1,17 @@
+#!/usr/bin/env fish
+
+type -q fisher
+or begin
+    curl -sL \
+        https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish |
+        source
+    and fisher install jorgebucaran/fisher
+end
+
+type -q mock
+or fisher install IlanCosman/clownfish
+
+type -q fishtape
+or fisher install jorgebucaran/fishtape
+
+fishtape tests/**.test.fish

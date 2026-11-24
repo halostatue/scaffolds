@@ -11,12 +11,12 @@ independently to [Hex][hex]:
 
 ## Development
 
-Requires [Gleam][gleam] >= {{ .Computed.gleamMinVersion }} and [just][just].
+Requires [Gleam][gleam] >= {{ .Computed.gleamMinVersion }} and [`mise`][mise].
 
 ```sh
-just test          # Run all tests
-just lint          # Lint all packages
-just format-check  # Check formatting
+mise run test          # Run all tests
+mise run lint          # Lint all packages
+mise run format:check  # Check formatting
 ```
 
 ## Semantic Versioning
@@ -25,6 +25,6 @@ just format-check  # Check formatting
 
 [gleam]: https://gleam.run
 [hex]: https://hex.pm
-[just]: https://just.systems
+[mise]: https://mise.jdx.dev
 [{{ .ProjectSnake }}]: https://{{.ProjectKebab}}.hexdocs.pm/
 [semver]: https://semver.org/

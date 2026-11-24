@@ -1,0 +1,36 @@
+#!/usr/bin/env fish
+#MISE description="Apply a git tag for this version"
+#USAGE arg "<version>" help="The version to tag"
+
+function escape
+    string escape --style=regex -- $argv
+end
+
+if ! string match -rq '^[0-9]+\.[0-9]+\.[0-9]+$' $usage_version
+    echo >&2 Invalid version: $usage_version
+    exit 1
+end
+
+if ! string match -rq '^##\s+'(escape $usage_version)'\b' <CHANGELOG.md
+    echo >&2 Version $usage_version is not mentioned in the changelog.
+    exit 1
+end
+
+for file in **.fish
+    if ! string match -rq ':v'(escape $usage_version)'$' <$file
+        echo >&2 File $file is not tagged with version $usage_version.
+        exit 1
+    end
+end
+
+if string match -rq -- -dirty (git describe --dirty 2>/dev/null)
+    echo >&2 Uncommitted changes are present.
+    exit 1
+end
+
+set major (string split -f1 . $usage_version)
+set major_minor (string split -f1,2 . $usage_version | string join .)
+
+git tag -f v$major -m "v$major -> v$usage_version"
+git tag -f v$major_minor -m "v$major_minor -> v$usage_version"
+git tag -f v$usage_version

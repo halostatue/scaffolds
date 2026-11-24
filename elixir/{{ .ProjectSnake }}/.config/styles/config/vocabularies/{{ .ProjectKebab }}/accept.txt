@@ -7,7 +7,7 @@ Ghostty
 {{- end }}
 [nN]eurodiversity
 [sS]exualization
-{{ if .Scaffold.useGithubActions -}}
+{{ if .Scaffold.useGitHubActions -}}
 [rR]eviewdog
 [aA]ctionlint
 [zZ]izmor

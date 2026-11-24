@@ -1,0 +1,9 @@
+[env]
+PROJECT_BASE = "@#[[[ .Computed.githubRepoName ]]]"
+
+[tools]
+"aqua:fish-shell/fish-shell" = "4"
+#[[[ if .Scaffold.useGitHubActions -]]]
+pinact = "5.0"
+zizmor = "1.33"
+#[[[- end ]]]

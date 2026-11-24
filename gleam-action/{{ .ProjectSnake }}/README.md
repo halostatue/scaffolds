@@ -27,8 +27,8 @@ This action is written in [Gleam][gleam] targeting JavaScript and bundled with
 [pontil_build][pontil].
 
 ```sh
-gleam test        # Run tests
-just build        # Build the action bundle
+mise run test         # Run tests
+mise run build        # Build the action bundle
 ```
 
 ## Semantic Versioning

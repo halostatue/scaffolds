@@ -1,0 +1,24 @@
+[tasks.test]
+extends = "gleam:test"
+
+[task.docs]
+extends = "gleam:docs"
+
+[task."docs:open"]
+extends = "gleam:docs:open"
+run = "open build/dev/docs/#[[[ .ProjectSnake ]]]/index.html"
+
+[task.build]
+extends = "gleam:build"
+
+[task.lint]
+extends = "gleam:lint"
+
+[task."deps:download"]
+extends = "gleam:deps:download"
+
+[task.format]
+extends = "gleam:format"
+
+[task."format:check"]
+extends = "gleam:format:check"

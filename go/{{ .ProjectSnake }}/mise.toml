@@ -1,0 +1,6 @@
+[tools]
+go = "{{ .Scaffold.goVersion }}"
+#[[[ if .Scaffold.useGitHubActions -]]]
+pinact = "5.0"
+zizmor = "1.33"
+#[[[- end ]]]

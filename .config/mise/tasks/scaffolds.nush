@@ -1,0 +1,6 @@
+#!/usr/bin/env nu
+#MISE description="Show defined scaffolds"
+
+use scaffolds.nu
+
+scaffolds show

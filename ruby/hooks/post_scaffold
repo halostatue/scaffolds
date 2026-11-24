@@ -4,13 +4,20 @@ set -euo pipefail
 
 cd "{{ .ProjectSnake }}"
 
-fd -H -tf --exec-batch chmod -x
-fd -H -tf . .config/mise/tasks --exec-batch chmod +x
+find . -type f -name 'mise.toml' -print0 | xargs -0 mise trust
+find . -type f -print0 | xargs -0 chmod -x
+find . -type f .config/mise/tasks -print0 | xargs -0 chmod +x
+find . -type f .config/mise/tasks -print0 | xargs -0 mise trust
 
-mise trust
-mise run pinact --update
+if [[ -d .github/workflows ]]; then
+  mise run pinact --update
+fi
 
-rumdl fmt ./**.md
+if command -v rumdl >/dev/null 2>&1; then
+  find . -type f -name '*.md' -print0 | xargs 0 rumdl fmt
+elif command -v deno >/dev/null 2>&1; then
+  find . -type f -name '*.md' -print0 | xargs 0 deno fmt
+fi
 
 bundle install
 

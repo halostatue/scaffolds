@@ -1,0 +1,6 @@
+[tools]
+"aqua:hay-kot/scaffold" = "0.13"
+nu = "0.117.0"
+
+[env]
+NU_LIB_DIRS = "{{config_root}}/.config/mise/lib"

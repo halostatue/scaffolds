@@ -1,3 +1,0 @@
-[tools]
-gleam = "{{ .Computed.gleamMiseVersion }}"
-node = "24"
