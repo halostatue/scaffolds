@@ -143,3 +143,7 @@ delimiters:
   - glob: "mise.toml"
     left: "#[[["
     right: "]]]"
+
+  - glob: ".gitignore"
+    left: "#{{"
+    right: "}}"

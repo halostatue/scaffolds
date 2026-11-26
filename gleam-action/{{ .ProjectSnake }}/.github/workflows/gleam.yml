@@ -22,6 +22,7 @@ jobs:
 
     steps:
       - name: Harden the runner
+        if: ${{ !github.event.repository.private }}
         uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
         with:
           disable-sudo: true
