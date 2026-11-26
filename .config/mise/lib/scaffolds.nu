@@ -62,7 +62,9 @@ export def generate [name: string]: nothing -> nothing {
 
     cd $root
 
-    scaffold new --preset test --no-prompt --output-dir ($root | path join test) --force --run-hooks never $"./($name)" $"Project=($project)" ...$extra
+    scaffold new --preset test --no-prompt --output-dir (
+      $root | path join test
+    ) --force --run-hooks always $"./($name)" $"Project=($project)" ...$extra
 
     print ""
     print $"Scaffold generated in test/($project)"

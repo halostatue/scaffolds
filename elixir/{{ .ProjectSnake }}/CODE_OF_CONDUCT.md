@@ -1,1 +1,1 @@
-{{ partial "code_of_conduct" . }}
+{{- partial "code_of_conduct" . -}}

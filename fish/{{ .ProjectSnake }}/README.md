@@ -33,7 +33,6 @@ example output
 
 {{ .ProjectPascal }} follows [Semantic Versioning 2.0][semver].
 
-[fish shell]: https://fishshell.com "friendly interactive shell"
 [fish]: https://github.com/fish-shell/fish-shell
 [fisher]: https://github.com/jorgebucaran/fisher
 [semver]: https://semver.org/

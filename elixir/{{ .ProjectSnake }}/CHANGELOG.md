@@ -1,1 +1,1 @@
-{{ partial "changelog" . }}
+{{- partial "changelog" . -}}

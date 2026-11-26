@@ -34,5 +34,4 @@ Documentation is found on [docs.rs][docs].
 [ci]: {{.Computed.githubUrl}}/actions/workflows/rust.yml
 [crate]: https://crates.io/crates/{{.ProjectSnake}}
 [docs]: https://docs.rs/{{.ProjectSnake}}
-[licence]: {{.Computed.githubUrl}}/blob/main/LICENCE.md
 [semver]: https://semver.org/

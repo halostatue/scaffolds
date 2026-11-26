@@ -1,2 +1,1 @@
-{{ partial "pinact" . }}
-
+{{- partial "pinact" . -}}

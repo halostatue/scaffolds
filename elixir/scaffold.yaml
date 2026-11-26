@@ -80,6 +80,12 @@ questions:
       confirm: "Enable Dependabot?"
       default: true
 
+  - name: "useCoveralls"
+    group: "ci"
+    prompt:
+      confirm: "Use Coveralls?"
+      default: true
+
   - name: "useGitHubFunding"
     group: "project"
     prompt:

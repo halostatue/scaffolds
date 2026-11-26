@@ -4,19 +4,22 @@ set -euo pipefail
 
 cd "{{ .ProjectSnake }}"
 
-find . -type f -name 'mise.toml' -print0 | xargs -0 mise trust
+find . -type f -name 'mise.toml' -print0 | xargs -0 -I{} mise trust {}
 find . -type f -print0 | xargs -0 chmod -x
-find . -type f .config/mise/tasks -print0 | xargs -0 chmod +x
-find . -type f .config/mise/tasks -print0 | xargs -0 mise trust
+
+if [[ -d .config/mise/tasks ]]; then
+  find .config/mise/tasks -type f -print0 | xargs -0 chmod +x
+  find .config/mise/tasks -type f -print0 | xargs -0 -I{} mise trust {}
+fi
 
 if [[ -d .github/workflows ]]; then
   mise run pinact --update
 fi
 
 if command -v rumdl >/dev/null 2>&1; then
-  find . -type f -name '*.md' -print0 | xargs 0 rumdl fmt
+  find . -type f -name '*.md' -print0 | xargs -0 rumdl fmt
 elif command -v deno >/dev/null 2>&1; then
-  find . -type f -name '*.md' -print0 | xargs 0 deno fmt
+  find . -type f -name '*.md' -print0 | xargs -0 deno fmt
 fi
 
 go mod tidy

@@ -48,6 +48,7 @@ jobs:
 
     steps:
       - name: Harden Runner
+        if: ${{ !github.event.repository.private }}
         uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: block
@@ -85,6 +86,7 @@ jobs:
     env:
       LANG: en_US.UTF-8
       LC_CTYPE: en_US.UTF-8
+      COVERALLS: "#[[[ .scaffold.useCoveralls ]]]"
 
     runs-on: ubuntu-24.04
 
@@ -93,6 +95,7 @@ jobs:
 
     steps:
       - name: Harden Runner
+        if: ${{ !github.event.repository.private }}
         uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: block
@@ -124,6 +127,8 @@ jobs:
 
       - run: mix hex.audit
 
+      - run: mix deps.unlock --check-unused
+
       - run: mix sobelow --config --format github
 
       - run: mix format --check-formatted
@@ -131,8 +136,15 @@ jobs:
       - run: mix compile --warnings-as-errors
 
       - run: mix coveralls.github
+      - name: Report coverage
         env:
           GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "${COVERALLS:-}" == true "]]; then
+            mix coveralls.github
+          else
+            mix coveralls
+          fi
 
       - run: mix credo --strict
 
@@ -147,3 +159,20 @@ jobs:
             plts@elixir-${{ steps.install.outputs.elixir-version }}-otp-${{ steps.install.outputs.otp-version }}-mix-
 
       - run: mix dialyzer --format github
+
+  report-mix-deps:
+    name: Report Mix Dependencies
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' &&
+            github.repository_owner == '#[[[ .scaffold.githubOwner ]]]' &&
+            !github.event.repository.private }}
+
+    permissions:
+      contents: write # Allow the dependencies API to be called
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: erlef/mix-dependency-submission@c5bd30a0e18822272a914adb7fb153866d491baf # v1.3.5

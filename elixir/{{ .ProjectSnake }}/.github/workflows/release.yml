@@ -8,7 +8,7 @@ on:
 permissions: {}
 
 concurrency:
-  group: ${{ github.workflow }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -20,32 +20,47 @@ jobs:
     environment: release
 
     permissions:
-      id-token: write # Required for workload identities
-      contents: read
+      contents: write # Required to create the release
+      id-token: write # Required to get Hex authentication
 
     steps:
       - name: Harden Runner
+        if: ${{ !github.event.repository.private }}
         uses: step-security/harden-runner@1d88384fd173af6ecb012dfd0264a306b711241a # v2.22.4
         with:
           egress-policy: block
           allowed-endpoints: >
             builds.hex.pm:443
-            coveralls.io:443
             github.com:443
             hex.pm:443
             release-assets.githubusercontent.com:443
             repo.hex.pm:443
+            uploads.github.com:443
 
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       - uses: erlef/setup-beam@54075bcc5e249e4758d363f27d099f55d843f124 # v1.24.1
+        id: install
         with:
           otp-version: '29'
           elixir-version: '1.20'
 
-      - name: Publish with Mix
-        run: |
-          mix deps.get
-          mix hex.publish --yes
+      - run: mix 'do' deps.get + deps.compile
+
+      - name: Verify tag, mix.exs version, and changelog
+        run: mix publish_check "${GITHUB_REF_NAME}" --notes-file release-notes.md
+
+      - run: mix format --check-formatted
+
+      - run: mix compile --warnings-as-errors
+
+      - run: mix credo --strict
+
+      - run: mix hex.publish --yes
+
+      - name: Create GitHub Release
+        run: gh release create "${GITHUB_REF_NAME}" --title "${GITHUB_REF_NAME}" --notes-file release-notes.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

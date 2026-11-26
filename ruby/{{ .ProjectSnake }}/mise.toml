@@ -1,5 +1,5 @@
 [tools]
-ruby = "{{ .Scaffold.ciRubyVersion }}"
+ruby = "#[[[ .Scaffold.ciRubyVersion ]]]"
 #[[[ if .Scaffold.useGitHubActions -]]]
 pinact = "5.0"
 zizmor = "1.33"

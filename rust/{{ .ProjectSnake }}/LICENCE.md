@@ -1,1 +1,1 @@
-{{ partial "licence" . }}
+{{- partial "licence" . -}}

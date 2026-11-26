@@ -1,1 +1,1 @@
-{{ partial "ai_policy" . }}
+{{- partial "ai_policy" . -}}
