@@ -1,4 +1,0 @@
-{{ if .Computed.hasApache -}}[spdx-apache]: https://spdx.org/licenses/Apache-2.0.html{{- end }}
-{{ if .Computed.hasMit -}}[spdx-mit]: https://spdx.org/licenses/MIT.html{{- end }}
-[trailer]: https://git-scm.com/docs/git-interpret-trailers
-[dco]: licences/dco.txt

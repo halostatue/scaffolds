@@ -93,6 +93,7 @@ questions:
       default: true
 
 computed:
+  projectName: "`{{ .ProjectSnake }}`"
   author: "{{ or .Scaffold.authorName .Scaffold.githubOwner }}"
   elixirVersion: "~> 1.{{ .Scaffold.elixirVersion }}"
   githubRepoName: "{{ .Scaffold.githubOwner }}/{{ .ProjectSnake }}"

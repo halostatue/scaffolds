@@ -84,6 +84,7 @@ questions:
       default: true
 
 computed:
+  projectName: "`{{ .ProjectSnake }}`"
   author: '{{ or .Scaffold.authorName .Scaffold.githubOwner }}'
   githubRepoName: '{{ .Scaffold.githubOwner }}/{{ .ProjectSnake }}'
   githubUrl: 'https://github.com/{{.Scaffold.githubOwner }}/{{ .ProjectSnake }}'
