@@ -46,6 +46,15 @@ questions:
     prompt:
       message: "Author/Maintainer name (optional, defaults to GitHub owner)"
 
+  - name: "maintainerVoice"
+    group: "project"
+    prompt:
+      message: "Maintainer voice in documentation (I/me/my or we/us/our)"
+      default: "singular"
+      options:
+        - "singular"
+        - "plural"
+
   - name: "gleamMinorVersion"
     group: "project"
     prompt:
@@ -113,9 +122,20 @@ computed:
    {{- else -}}
    MIT
    {{- end -}}
+  # Knobs for shared partials (see the header comment of each partial).
+  # An action always has GitHub Actions, so there is no question for it.
+  githubActions: "true"
+  ignoreDirs: "build,dist"
+  valeFormats: "gleam,mjs"
   # Gleam isn't yet supported by vale
   valeGrammars: '{{ "javascript,yaml" | splitList "," | join ", " }}'
   year: '{{ now | date "2006" }}'
+  # Maintainer voice: single-word substitutions; use `if .Computed.plural`
+  # inline for anything longer.
+  plural: '{{ eq .Scaffold.maintainerVoice "plural" }}'
+  We: '{{ if eq .Scaffold.maintainerVoice "plural" }}We{{ else }}I{{ end }}'
+  we: '{{ if eq .Scaffold.maintainerVoice "plural" }}we{{ else }}I{{ end }}'
+  our: '{{ if eq .Scaffold.maintainerVoice "plural" }}our{{ else }}my{{ end }}'
 
 features:
   - value: "{{ .Computed.hasApache }}"

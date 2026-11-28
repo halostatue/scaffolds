@@ -1,10 +1,6 @@
 # {{ .ProjectPascal }} Security
 
-## LLM-Generated Security Report Policy
-
-Absolutely no security reports will be accepted that have been generated
-solely by LLM agents. There must be a human that confirms the issue.
-
+{{ partial "security_llm_policy" . }}
 ## Supported Versions
 
 Security reports are accepted for the most recent major release with support
@@ -22,8 +18,4 @@ As of {{ now | date "January 2006" }}, the support list is:
 The oldest supported version of Go will not be deprecated until the release of
 a new version of Go.
 
-## Reporting a Vulnerability
-
-Create a [private vulnerability report][advisory] with GitHub.
-
-[advisory]: {{.Computed.githubUrl}}/security/advisories/new
+{{ partial "security_reporting" . -}}

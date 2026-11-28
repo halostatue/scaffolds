@@ -1,2 +1,1 @@
-[*.gleam]
-max_line_length = 80
+{{- partial "editorconfig_gleam" . -}}

@@ -1,0 +1,19 @@
+{{- /* CONTRIBUTING.md section. Requires the host to define the [dco] link
+reference. */ -}}
+
+## AI Contribution Policy
+
+You must fully understand and be able to explain anything you submit. Signing
+off on a commit certifies under the [Developer Certificate of Origin][dco] that
+you have the right to submit it under this project's licences (see
+[LICENCE](LICENCE.md)); you cannot make that certification for work you do not
+understand or whose origin you cannot account for.
+
+{{ if .Scaffold.includeAIPolicy -}}
+All contributions are subject to the [AI Usage Policy](AI_POLICY.md). All AI
+assistance must be disclosed, and AI tools are not authors: commits that credit
+an AI tool in a `Signed-off-by` or `Co-authored-by` trailer will be rejected.
+{{- else }}
+Any contribution (bug report, feature request, or pull request) that uses
+undeclared AI output will be rejected.
+{{- end }}

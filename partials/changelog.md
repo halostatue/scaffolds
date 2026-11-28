@@ -1,4 +1,4 @@
-# `{{ .ProjectSnake }}` Changelog
+# {{ .Computed.projectName }} Changelog
 
 ## VERSION / YYYY-MM-DD
 

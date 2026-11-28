@@ -1,0 +1,38 @@
+{{- /*
+  .github/workflows/dco-check.yml. The host file uses #[[[ ]]] delimiters, but
+  partials are always parsed with {{ }}, so GitHub Actions expressions are
+  emitted as raw-string literals.
+*/ -}}
+name: Check DCO
+
+on:
+  pull_request:
+
+permissions: {}
+
+concurrency:
+  group: {{ `${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}` }}
+  cancel-in-progress: false
+
+jobs:
+  check-dco:
+    name: Check DCO
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write # Required to write comments on the PR
+
+    steps:
+      - name: Harden the runner
+        if: {{ `${{ !github.event.repository.private }}` }}
+        uses: step-security/harden-runner@aebdcf6156ab6691adf63218240e476564a1ed4c # v2.23.0
+        with:
+          egress-policy: block
+          disable-sudo: true
+          allowed-endpoints: >
+            api.github.com:443
+            github.com:443
+            release-assets.githubusercontent.com:443
+
+      - uses: KineticCafe/actions-dco@e9627100b7f566546e67cde54bfa7d3790ab649b # v4.0.0

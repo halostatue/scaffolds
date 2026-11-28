@@ -1,7 +1,1 @@
-engine: dasel
-scopes:
-  - name: name
-    expr: name
-
-  - name: name
-    expr: search(has("name")).map(name)
+{{- partial "vale_gha_view" . -}}

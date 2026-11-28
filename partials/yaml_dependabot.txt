@@ -1,0 +1,27 @@
+{{- /*
+  .github/dependabot.yml. Knobs: .Computed.dependabotEcosystems (optional comma
+  list of ecosystem:group pairs, e.g. "cargo:cargo,gomod:go"). github-actions
+  is always included.
+*/ -}}
+version: 2
+
+updates:
+{{- range $i, $e := concat (list "github-actions:actions") (compact (splitList "," (default "" .Computed.dependabotEcosystems))) }}
+{{- $pair := splitList ":" $e }}
+{{- if $i }}
+{{ end }}
+  - package-ecosystem: {{ index $pair 0 }}
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: 'deps'
+    cooldown:
+      default-days: 7
+    groups:
+      {{ index $pair 1 }}:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+{{- end }}

@@ -1,5 +1,1 @@
-# `{{ .ProjectSnake }}` Changelog
-
-## VERSION / YYYY-MM-DD
-
-- Initial release.
+{{- partial "changelog" . -}}

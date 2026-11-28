@@ -1,0 +1,9 @@
+{{- /* .rumdl.toml. Knobs: .Computed.ignoreDirs (comma list, optional). */ -}}
+# Global configuration options
+[global]
+exclude = [".git", ".github"
+{{- with .Computed.ignoreDirs }}{{ range splitList "," . }}, "{{ . }}"{{ end }}{{ end -}}
+]
+
+respect-gitignore = true
+flavor = "gfm"

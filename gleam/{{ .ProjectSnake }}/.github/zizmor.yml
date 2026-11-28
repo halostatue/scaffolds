@@ -1,1 +1,1 @@
-rules: {}
+{{- partial "zizmor_config" . -}}

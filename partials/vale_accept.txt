@@ -1,0 +1,16 @@
+{{- /* Vale vocabulary. Knobs: .Computed.valeAccept (comma list, optional), .Computed.githubActions. */ -}}
+{{ if .Scaffold.includeAIPolicy -}}
+Ghostty
+Grinberg
+Nijhof
+Theocharis
+{{ end -}}
+[nN]eurodiversity
+[sS]exualization
+{{ if .Computed.githubActions -}}
+[rR]eviewdog
+[aA]ctionlint
+[zZ]izmor
+{{ end -}}
+{{ with .Computed.valeAccept }}{{ range splitList "," . }}{{ . }}
+{{ end }}{{ end -}}

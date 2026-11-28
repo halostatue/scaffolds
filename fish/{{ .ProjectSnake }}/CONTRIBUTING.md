@@ -11,7 +11,7 @@ This plugin is governed under the
 
 ## Code Guidelines
 
-I have several guidelines to contributing code through pull requests:
+{{ .Computed.We }} have several guidelines for contributing code through pull requests:
 
 - If tests exist for the project, the test suite should pass. New or changed
   functionality should have tests added. The test suite is written with
@@ -30,7 +30,7 @@ I have several guidelines to contributing code through pull requests:
 - Proposed changes should be on a thoughtfully-named topic branch and
   organized into logical commit chunks as appropriate.
 
-- Use [Conventional Commits][conventional] with my
+- Use [Conventional Commits][conventional] with {{ .Computed.our }}
   [conventions](#commit-conventions).
 
 - Do not change the version number; when your patch is accepted and a release
@@ -49,51 +49,8 @@ I have several guidelines to contributing code through pull requests:
 - Include your DCO sign-off in each commit message (see
   [LICENCE](LICENCE.md)).
 
-## AI Contribution Policy
-
-Contributions must be well understood by the submitter and that the developer
-can attest to the [Developer Certificate of Origin][dco] for each pull request
-(see [LICENCE](LICENCE.md)).
-
-Any contribution (bug, feature request, or pull request) that uses undeclared
-AI output will be rejected.
-
-## Commit Conventions
-
-This plugin has adopted a variation of the Conventional Commits format for
-commit messages. The following types are permitted:
-
-| Type    | Purpose                                               |
-| ------- | ----------------------------------------------------- |
-| `feat`  | A new feature                                         |
-| `fix`   | A bug fix                                             |
-| `chore` | A code change that is neither a bug fix nor a feature |
-| `docs`  | Documentation updates                                 |
-| `deps`  | Dependency updates, including GitHub Actions.         |
-
-I encourage the use of [Tim Pope's][tpope-qcm] or [Chris Beam's][cbeams]
-guidelines on the writing of commit messages
-
-I require the use of [git][trailers1] [trailers][trailers2] for specific
-additional metadata and strongly encourage it for others. The conditionally
-required metadata trailers are:
-
-- `Breaking-Change`: if the change is a breaking change. **Do not** use the
-  shorthand form (`feat!(scope)`) or `BREAKING CHANGE`.
-
-- `Signed-off-by`: this is required for all developers except me, as outlined
-  in the [Licence](./LICENCE.md#developer-certificate-of-origin).
-
-- `Fixes` or `Resolves`: If a change fixes one or more open [issues][issues],
-  that issue must be included in the `Fixes` or `Resolves` trailer. Multiple
-  issues should be listed comma separated in the same trailer:
-  `Fixes: #1, #5, #7`, but _may_ appear in separate trailers. While both
-  `Fixes` and `Resolves` are synonyms, only _one_ should be used in a given
-  commit or pull request.
-
-- `Related to`: If a change does not fix an issue, those issue references
-  should be included in this trailer.
-
+{{ partial "contributing_ai_policy" . }}
+{{ partial "contributing_commits" . }}
 ## Contributors
 
 {{ .Computed.author }} created `{{ .ProjectSnake }}`.

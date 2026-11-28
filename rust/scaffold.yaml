@@ -45,6 +45,15 @@ questions:
     prompt:
       message: "Author/Maintainer name (optional, defaults to GitHub owner)"
 
+  - name: "maintainerVoice"
+    group: "project"
+    prompt:
+      message: "Maintainer voice in documentation (I/me/my or we/us/our)"
+      default: "singular"
+      options:
+        - "singular"
+        - "plural"
+
   - name: "msrv"
     group: "project"
     prompt:
@@ -99,13 +108,23 @@ computed:
   hasApache: '{{ or (eq .Scaffold.licenceId "Apache-2.0") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
   hasMit: '{{ or (eq .Scaffold.licenceId "MIT") (eq .Scaffold.licenceId "Apache-2.0 and MIT") }}'
   isDual: '{{ eq .Scaffold.licenceId "Apache-2.0 and MIT" }}'
+  # Knobs for shared partials (see the header comment of each partial).
+  dependabotEcosystems: "cargo:cargo"
+  githubActions: "{{ .Scaffold.useGitHubActions }}"
+  valeFormats: "rs"
   valeGrammars: '{{ "rust,yaml" | splitList "," | join ", " }}'
   year: '{{ now | date "2006" }}'
+  # Maintainer voice: single-word substitutions; use `if .Computed.plural`
+  # inline for anything longer.
+  plural: '{{ eq .Scaffold.maintainerVoice "plural" }}'
+  We: '{{ if eq .Scaffold.maintainerVoice "plural" }}We{{ else }}I{{ end }}'
+  we: '{{ if eq .Scaffold.maintainerVoice "plural" }}we{{ else }}I{{ end }}'
+  our: '{{ if eq .Scaffold.maintainerVoice "plural" }}our{{ else }}my{{ end }}'
 
 features:
   - value: "{{ .Scaffold.useGitHubActions }}"
     globs:
-      - "**/.github/dco-check.yml"
+      - "**/.github/dco-check.toml"
       - "**/.github/workflows/**"
       - "**/.github/zizmor.yml"
 

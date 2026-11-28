@@ -35,10 +35,10 @@ export def generate [name: string]: nothing -> nothing {
 
     let extra = match $name {
         "elixir" | "fish" | "ruby" | "rust" => [
-            "useGithubActions:bool=true"
+            "useGitHubActions:bool=true"
             "useGitHubFunding:bool=false"
             "useDependabot:bool=true"
-            "useAIPolicy:bool=true"
+            "includeAIPolicy:bool=true"
         ]
         "gleam-action" => ["useGitHubFunding:bool=true"]
         "gleam-monorepo" => [
@@ -56,7 +56,7 @@ export def generate [name: string]: nothing -> nothing {
             "useGitHubActions:bool=true"
             "useGitHubFunding:bool=true"
             "useDependabot:bool=true"
-            "useAIPolicy:bool=true"
+            "includeAIPolicy:bool=true"
         ]
     }
 

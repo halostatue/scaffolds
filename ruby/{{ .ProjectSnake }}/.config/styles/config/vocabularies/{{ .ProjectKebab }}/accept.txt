@@ -1,14 +1,1 @@
-{{ if .Scaffold.includeAIPolicy -}}
-Ghostty
-Grinberg
-Nijhof
-Theocharis
-Ghostty
-{{- end }}
-[nN]eurodiversity
-[sS]exualization
-{{ if .Scaffold.useGitHubActions -}}
-[rR]eviewdog
-[aA]ctionlint
-[zZ]izmor
-{{- end }}
+{{- partial "vale_accept" . -}}

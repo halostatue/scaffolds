@@ -1,9 +1,1 @@
-comment = true
-
-bots.policy = "well-known"
-bots.exclude-categories = ["ai"]
-bots.allow = []
-
-ai.signed-off-by = "reject"
-ai.co-authored-by = "reject"
-ai.trace-detection = "reject"
+{{- partial "dco_check_config" . -}}

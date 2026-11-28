@@ -1,6 +1,1 @@
-# Global configuration options
-[global]
-exclude = [".git", ".github", "build", "dist"]
-
-respect-gitignore = true
-flavor = "gfm"
+{{- partial "rumdl" . -}}

@@ -1,17 +1,1 @@
-version: 2
-
-updates:
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: monthly
-    commit-message:
-      prefix: 'deps'
-    cooldown:
-      default-days: 7
-    groups:
-      actions:
-        applies-to: version-updates
-        update-types:
-          - minor
-          - patch
+{{- partial "yaml_dependabot" . -}}

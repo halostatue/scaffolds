@@ -1,5 +1,1 @@
-[default]
-
-[default.extend-identifiers]
-
-[default.extend-words]
+{{- partial "typos" . -}}
